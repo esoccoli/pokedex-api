@@ -10,7 +10,9 @@ const respondJSON = (request, response, status, object) => {
     'Content-Length': Buffer.byteLength(content, 'utf8'),
   });
 
-  response.write(content);
+  if (request.method !== 'HEAD') {
+    response.write(content);
+  }
   response.end();
 };
 
@@ -30,7 +32,7 @@ const invalidNumQueryParam = (request, response) => {
     id: 'badRequest',
   };
   respondJSON(request, response, 400, responseJSON);
-}
+};
 
 // Retrieves data about a specific pokemon, specified by a pokedex number in the query params
 const getPokemon = (request, response) => {
@@ -61,6 +63,7 @@ const getTypes = (request, response) => {
   }
 };
 
+// Retreives a list of every type that a specified pokemon is weak to
 const getWeaknesses = (request, response) => {
   if (!request.query.num) {
     missingNumQueryParam(request, response);
@@ -68,6 +71,40 @@ const getWeaknesses = (request, response) => {
     invalidNumQueryParam(request, response);
   } else {
     const responseJSON = pokedexData[request.query.num - 1].weaknesses;
+    respondJSON(request, response, 200, responseJSON);
+  }
+};
+
+// Retreives the evolution(s) of the specified pokemon, if it has any
+// If the specified pokemon does not have any evolutions, returns
+// a JSON stating that along with a 200 status code
+const getEvolution = (request, response) => {
+  if (!request.query.num) {
+    missingNumQueryParam(request, response);
+  } else if (request.query.num < 1 || request.query.num > 151) {
+    invalidNumQueryParam(request, response);
+  } else if (!pokedexData[request.query.num - 1].next_evolution) {
+    const responseJSON = {
+      message: 'Specified pokemon does not have any evolutions',
+      id: 'success',
+    };
+    respondJSON(request, response, 200, responseJSON);
+  } else {
+    const responseJSON = pokedexData[request.query.num - 1].next_evolution;
+    respondJSON(request, response, 200, responseJSON);
+  }
+};
+
+const getHeightWeight = (request, response) => {
+  if (!request.query.num) {
+    missingNumQueryParam(request, response);
+  } else if (request.query.num < 1 || request.query.num > 151) {
+    invalidNumQueryParam(request, response);
+  } else {
+    const responseJSON = {
+      height: pokedexData[request.query.num - 1].height,
+      weight: pokedexData[request.query.num - 1].weight,
+    };
     respondJSON(request, response, 200, responseJSON);
   }
 };
@@ -88,5 +125,7 @@ module.exports = {
   getAllPokemon,
   getTypes,
   getWeaknesses,
+  getEvolution,
+  getHeightWeight,
   getNotFound,
 };

@@ -12,9 +12,9 @@ const urlStruct = {
   '/getPokemon': jsonHandler.getPokemon,
   '/getAllPokemon': jsonHandler.getAllPokemon,
   '/getTypes': jsonHandler.getTypes,
-  '/getWeaknesses': jsonHandler.getWeaknesses, // TODO: Query params for getting weaknesses of a specific pkmn. If params are missing or invalid, return 400
-  '/getEvolution': jsonHandler.getEvolution, // TODO: Query params to specify a pokemon to get their evolution(s)
-  '/getHeightWeight': jsonHandler.getHeightWeight, // TODO: Query params for getting the height & weight of a specific pokemon
+  '/getWeaknesses': jsonHandler.getWeaknesses,
+  '/getEvolution': jsonHandler.getEvolution,
+  '/getHeightWeight': jsonHandler.getHeightWeight,
   '/addPokemon': jsonHandler.addPokemon, // TODO: Require user to provide details about a pokemon, then use that to create a new entry in the object.
   '/addType': jsonHandler.addType, // TODO: Adds an additional type to the array of types for a specific pokemon
   '/removeType': jsonHandler.removeType, // TODO: Remove a specific type from the array of types for a specific pokemon. If that type is not present, return a 400'

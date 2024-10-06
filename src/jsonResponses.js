@@ -14,6 +14,65 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
+// Returns a 400 status and an appropriate JSON object if the 'num' query parameter is missing
+const missingNumQueryParam = (request, response) => {
+  const responseJSON = {
+    message: "Missing required query parameter 'num' set to an integer between 1 and 151 inclusive",
+    id: 'badRequest',
+  };
+  respondJSON(request, response, 400, responseJSON);
+};
+
+// Returns a 400 status and an appropriate JSON object if the 'num' query parameter is invalid
+const invalidNumQueryParam = (request, response) => {
+  const responseJSON = {
+    message: "Invalid query parameter. 'num' must be an integer between 1 and 151",
+    id: 'badRequest',
+  };
+  respondJSON(request, response, 400, responseJSON);
+}
+
+// Retrieves data about a specific pokemon, specified by a pokedex number in the query params
+const getPokemon = (request, response) => {
+  if (!request.query.num) {
+    missingNumQueryParam(request, response);
+  } else if (request.query.num < 1 || request.query.num > 151) {
+    invalidNumQueryParam(request, response);
+  } else {
+    const responseJSON = pokedexData[request.query.num - 1];
+    respondJSON(request, response, 200, responseJSON);
+  }
+};
+
+// Retreives all of the pokemon data that is currently stored and returns it as a JSON
+const getAllPokemon = (request, response) => {
+  respondJSON(request, response, 200, pokedexData);
+};
+
+// Retreives the type(s) of the pokemon with the specified index
+const getTypes = (request, response) => {
+  if (!request.query.num) {
+    missingNumQueryParam(request, response);
+  } else if (request.query.num < 1 || request.query.num > 151) {
+    invalidNumQueryParam(request, response);
+  } else {
+    const responseJSON = pokedexData[request.query.num - 1].type;
+    respondJSON(request, response, 200, responseJSON);
+  }
+};
+
+const getWeaknesses = (request, response) => {
+  if (!request.query.num) {
+    missingNumQueryParam(request, response);
+  } else if (request.query.num < 1 || request.query.num > 151) {
+    invalidNumQueryParam(request, response);
+  } else {
+    const responseJSON = pokedexData[request.query.num - 1].weaknesses;
+    respondJSON(request, response, 200, responseJSON);
+  }
+};
+
+// Returns a 404 and a corresponding JSON object if the requested page could not be found
 const getNotFound = (request, response) => {
   const responseJSON = {
     message: 'The requested page was not found',
@@ -25,5 +84,9 @@ const getNotFound = (request, response) => {
 
 module.exports = {
   pokedexData,
+  getPokemon,
+  getAllPokemon,
+  getTypes,
+  getWeaknesses,
   getNotFound,
 };

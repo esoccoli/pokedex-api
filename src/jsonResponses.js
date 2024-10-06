@@ -10,7 +10,7 @@ const respondJSON = (request, response, status, object) => {
     'Content-Length': Buffer.byteLength(content, 'utf8'),
   });
 
-  if (request.method !== 'HEAD') {
+  if (request.method !== 'HEAD' && status !== 204) {
     response.write(content);
   }
   response.end();
@@ -95,6 +95,7 @@ const getEvolution = (request, response) => {
   }
 };
 
+// Retreives the height and the weight of the specified pokemon
 const getHeightWeight = (request, response) => {
   if (!request.query.num) {
     missingNumQueryParam(request, response);
@@ -119,6 +120,76 @@ const getNotFound = (request, response) => {
   return respondJSON(request, response, 404, responseJSON);
 };
 
+const addPokemon = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required query params: num, name.',
+  };
+
+  const {
+    num, name, img, type, height, weight, weaknesses, nextEvolution,
+  } = request.body;
+
+  // Make sure both required query params are present
+  if (!num || !name) {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  // Set default status to 204 (updated)
+  let responseCode = 204;
+
+  // If the user doesn't exist yet, create it and set the status code to 201 (created)
+  if (!pokedexData[name]) {
+    responseCode = 201;
+    pokedexData[name] = {
+      id: Object.length(pokedexData) + 1,
+      num,
+      name,
+    };
+  }
+
+  // All of these attributes are optional query parameters
+  // If any are provided, the value of that attribute will be updated accordingly
+  if (img) { pokedexData[name].img = img; }
+  if (type) { pokedexData[name].type = type; }
+  if (height) { pokedexData[name].height = height; }
+  if (weight) { pokedexData[name].weight = weight; }
+  if (weaknesses) { pokedexData[name].weaknesses = weaknesses; }
+  if (nextEvolution) { pokedexData[name].next_evolution = nextEvolution; }
+
+  if (responseCode === 201) {
+    responseJSON.message = 'Created Successfully';
+    return respondJSON(request, response, responseCode, responseJSON);
+  }
+
+  return respondJSON(request, response, responseCode, {});
+};
+
+const addType = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required query params: num, type.',
+  };
+
+  const { num, type } = request.body;
+
+  if (!num || !type) {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+  if (!pokedexData.num.contains(num)) {
+    return invalidNumQueryParam(request, response);
+  }
+
+  if (pokedexData[num].type.contains(type)) {
+    responseJSON.message = 'Type was already present, no changes needed';
+    responseJSON.id = 'success';
+    return respondJSON(request, response, 304, responseJSON);
+  }
+
+  pokedexData[num].type.push(type);
+  return respondJSON(request, response, 204, {});
+};
+
 module.exports = {
   pokedexData,
   getPokemon,
@@ -128,4 +199,6 @@ module.exports = {
   getEvolution,
   getHeightWeight,
   getNotFound,
+  addPokemon,
+  addType,
 };

@@ -6,19 +6,9 @@ const jsonHandler = require('./jsonResponses.js');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
-  '/': htmlHandler.getIndex,
-  '/docs': htmlHandler.getDocumentation,
-  '/style.css': htmlHandler.getCSS,
-  '/getPokemon': jsonHandler.getPokemon,
-  '/getAllPokemon': jsonHandler.getAllPokemon,
-  '/getTypes': jsonHandler.getTypes,
-  '/getWeaknesses': jsonHandler.getWeaknesses,
-  '/getEvolution': jsonHandler.getEvolution,
-  '/getHeightWeight': jsonHandler.getHeightWeight,
   '/addPokemon': jsonHandler.addPokemon, // TODO: Require user to provide details about a pokemon, then use that to create a new entry in the object.
   '/addType': jsonHandler.addType, // TODO: Adds an additional type to the array of types for a specific pokemon
   '/removeType': jsonHandler.removeType, // TODO: Remove a specific type from the array of types for a specific pokemon. If that type is not present, return a 400'
-  notFound: jsonHandler.getNotFound,
 };
 
 const parseBody = (request, response, handler) => {
@@ -38,25 +28,52 @@ const parseBody = (request, response, handler) => {
 
   request.on('end', () => {
     const bodyString = Buffer.concat(body).toString();
-    request.body = query.parse(bodyString);
+    const headers = JSON.stringify(request.headers);
 
-    // Once we have the bodyParams object, we will call the handler function. We then
-    // proceed much like we would with a GET request.
+    const requestType = headers['Content-Type'];
+
+    if (requestType === 'application/json') {
+      request.body = JSON.parse(bodyString);
+    } else if (requestType === 'application/x-www-form-urlencoded') {
+      request.body = query.parse(bodyString);
+    }
+
     handler(request, response);
   });
 };
 
 // Handles POST requests
 const handlePost = (request, response, parsedUrl) => {
-  // If they go to /addUser
-  if (parsedUrl.pathname === '/addUser') {
-    parseBody(request, response, jsonHandler.addUser);
+  if (parsedUrl.pathname === '/addPokemon') {
+    parseBody(request, response, jsonHandler.addPokemon);
+  } else if (parsedUrl.pathname === '/addType') {
+    parseBody(request, response, jsonHandler.addType);
   }
 };
 
 // Handles GET requests
 const handleGet = (request, response, parsedUrl) => {
-  console.log('test');
+  if (parsedUrl.pathname === '/') {
+    htmlHandler.getIndex(request, response);
+  } else if (parsedUrl.pathname === '/docs') {
+    htmlHandler.getDocs(request, response);
+  } else if (parsedUrl.pathname === '/style.css') {
+    htmlHandler.getCSS(request, response);
+  } else if (parsedUrl.pathname === '/getPokemon') {
+    jsonHandler.getPokemon(request, response);
+  } else if (parsedUrl.pathname === '/getAllPokemon') {
+    jsonHandler.getAllPokemon(request, response);
+  } else if (parsedUrl.pathname === '/getTypes') {
+    jsonHandler.getTypes(request, response);
+  } else if (parsedUrl.pathname === '/getWeaknesses') {
+    jsonHandler.getWeaknesses(request, response);
+  } else if (parsedUrl.pathname === '/getEvolution') {
+    jsonHandler.getEvolution(request, response);
+  } else if (parsedUrl.pathname === '/getHeightWeight') {
+    jsonHandler.getHeightWeight(request, response);
+  } else {
+    jsonHandler.getNotFound(request, response);
+  }
 };
 
 const onRequest = (request, response) => {
@@ -65,10 +82,10 @@ const onRequest = (request, response) => {
 
   request.query = Object.fromEntries(parsedUrl.searchParams);
 
-  if (urlStruct[parsedUrl.pathname]) {
-    urlStruct[parsedUrl.pathname](request, response);
+  if (request.method === 'POST') {
+    handlePost(request, response, parsedUrl);
   } else {
-    urlStruct.notFound(request, response);
+    handleGet(request, response, parsedUrl);
   }
 };
 

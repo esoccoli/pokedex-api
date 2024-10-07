@@ -1,0 +1,5 @@
+1. For this project, I am using the pokedex dataset
+2. For this milestone, I have implemented all of my API routes, as well as created outlines of the HTML files for my client page and my documentation page.
+3. The work I have remaining is to fix the errors that I am getting from my POST endpoints, and then actually make the client page and documentation pages. I plan to complete it by creating a simple page that allows the user to test each of the API endpoints, and then basically clone that page and modify that copy to show documentation for each route instead of allowing the user to interact with the endpoints.
+4. In order to go above and beyond, I have implemented a number of additional endpoints beyond the required 4 GET/HEAD endpoints. I also plan to use bulma in order to more easily style the client and docs pages, which will also provide me with the time to spend making those pages look nice and have a decent amount of styling
+5. I have not used any borrowed code fragments in my project

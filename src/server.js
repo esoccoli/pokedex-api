@@ -5,12 +5,6 @@ const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-const urlStruct = {
-  '/addPokemon': jsonHandler.addPokemon, // TODO: Require user to provide details about a pokemon, then use that to create a new entry in the object.
-  '/addType': jsonHandler.addType, // TODO: Adds an additional type to the array of types for a specific pokemon
-  '/removeType': jsonHandler.removeType, // TODO: Remove a specific type from the array of types for a specific pokemon. If that type is not present, return a 400'
-};
-
 const parseBody = (request, response, handler) => {
   const body = [];
 

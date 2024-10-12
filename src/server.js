@@ -22,9 +22,7 @@ const parseBody = (request, response, handler) => {
 
   request.on('end', () => {
     const bodyString = Buffer.concat(body).toString();
-    const headers = JSON.stringify(request.headers);
-
-    const requestType = headers['Content-Type'];
+    const requestType = request.headers['content-type'];
 
     if (requestType === 'application/json') {
       request.body = JSON.parse(bodyString);
@@ -37,16 +35,16 @@ const parseBody = (request, response, handler) => {
 };
 
 // Handles POST requests
-const handlePost = (request, response, parsedUrl) => {
-  if (parsedUrl.pathname === '/addPokemon') {
-    parseBody(request, response, jsonHandler.addPokemon);
-  } else if (parsedUrl.pathname === '/addType') {
-    parseBody(request, response, jsonHandler.addType);
-  }
-};
+// const handlePost = (request, response, parsedUrl) => {
+//   if (parsedUrl.pathname === '/addPokemon') {
+//     parseBody(request, response, jsonHandler.addPokemon);
+//   } else if (parsedUrl.pathname === '/addType') {
+//     parseBody(request, response, jsonHandler.addType);
+//   }
+// };
 
 // Handles GET requests
-const handleGet = (request, response, parsedUrl) => {
+const handleRequest = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/') {
     htmlHandler.getIndex(request, response);
   } else if (parsedUrl.pathname === '/docs') {
@@ -57,14 +55,22 @@ const handleGet = (request, response, parsedUrl) => {
     jsonHandler.getPokemon(request, response);
   } else if (parsedUrl.pathname === '/getAllPokemon') {
     jsonHandler.getAllPokemon(request, response);
+  } else if (parsedUrl.pathname === '/getImage') {
+    jsonHandler.getImage(request, response);
   } else if (parsedUrl.pathname === '/getTypes') {
     jsonHandler.getTypes(request, response);
   } else if (parsedUrl.pathname === '/getWeaknesses') {
     jsonHandler.getWeaknesses(request, response);
   } else if (parsedUrl.pathname === '/getEvolution') {
     jsonHandler.getEvolution(request, response);
-  } else if (parsedUrl.pathname === '/getHeightWeight') {
-    jsonHandler.getHeightWeight(request, response);
+  } else if (parsedUrl.pathname === '/getHeight') {
+    jsonHandler.getHeight(request, response);
+  } else if (parsedUrl.pathname === '/getWeight') {
+    jsonHandler.getWeight(request, response);
+  } else if (parsedUrl.pathname === '/addPokemon') {
+    parseBody(request, response, jsonHandler.addPokemon);
+  } else if (parsedUrl.pathname === '/updateTypes') {
+    parseBody(request, response, jsonHandler.updateTypes);
   } else {
     jsonHandler.getNotFound(request, response);
   }
@@ -76,11 +82,7 @@ const onRequest = (request, response) => {
 
   request.query = Object.fromEntries(parsedUrl.searchParams);
 
-  if (request.method === 'POST') {
-    handlePost(request, response, parsedUrl);
-  } else {
-    handleGet(request, response, parsedUrl);
-  }
+  handleRequest(request, response, parsedUrl);
 };
 
 http.createServer(onRequest).listen(port, () => {

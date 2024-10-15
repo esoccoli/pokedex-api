@@ -57,7 +57,7 @@ const handleRequest = (request, response, parsedUrl) => {
     jsonHandler.getAllPokemon(request, response);
   } else if (parsedUrl.pathname === '/getImage') {
     jsonHandler.getImage(request, response);
-  } else if (parsedUrl.pathname === '/getTypes') {
+  } else if (parsedUrl.pathname === '/getType') {
     jsonHandler.getTypes(request, response);
   } else if (parsedUrl.pathname === '/getWeaknesses') {
     jsonHandler.getWeaknesses(request, response);
@@ -69,8 +69,24 @@ const handleRequest = (request, response, parsedUrl) => {
     jsonHandler.getWeight(request, response);
   } else if (parsedUrl.pathname === '/addPokemon') {
     parseBody(request, response, jsonHandler.addPokemon);
-  } else if (parsedUrl.pathname === '/updateTypes') {
-    parseBody(request, response, jsonHandler.updateTypes);
+  } else if (parsedUrl.pathname === '/updateName') {
+    parseBody(request, response, jsonHandler.updateName);
+  } else if (parsedUrl.pathname === '/updateImage') {
+    parseBody(request, response, jsonHandler.updateImage);
+  } else if (parsedUrl.pathname === '/addType') {
+    parseBody(request, response, jsonHandler.addType);
+  } else if (parsedUrl.pathname === '/updateType') {
+    parseBody(request, response, jsonHandler.updateType);
+  } else if (parsedUrl.pathname === '/updateHeight') {
+    parseBody(request, response, jsonHandler.updateHeight);
+  } else if (parsedUrl.pathname === '/updateWeight') {
+    parseBody(request, response, jsonHandler.updateWeight);
+  } else if (parsedUrl.pathname === '/addWeakness') {
+    parseBody(request, response, jsonHandler.addWeakness);
+  } else if (parsedUrl.pathname === '/updateWeaknesses') {
+    parseBody(request, response, jsonHandler.updateWeaknesses);
+  } else if (parsedUrl.pathname === '/addEvolution') {
+    parseBody(request, response, jsonHandler.addEvolution);
   } else {
     jsonHandler.getNotFound(request, response);
   }

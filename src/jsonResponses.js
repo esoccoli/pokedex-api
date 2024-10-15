@@ -72,7 +72,7 @@ const getImage = (request, response) => {
 };
 
 // Retreives the type(s) of the pokemon with the specified index
-const getTypes = (request, response) => {
+const getType = (request, response) => {
   if (!request.query.id) { return missingIdQueryParam(request, response); }
 
   const data = getPokemonById(request);
@@ -206,8 +206,76 @@ const addPokemon = (request, response) => {
   return respondJSON(request, response, statusCode, {});
 };
 
+// Changes the name of a specified pokemon to the provided new name
+const updateName = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, name',
+    id: 'badRequest',
+  };
+
+  const { id, name } = request.body;
+
+  if (!id || !name) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  data.name = name;
+  pokedexData[id].name = data.name;
+  return respondJSON(request, response, 204, {});
+};
+
+// Change the image for a specific pokemon to the provided new image
+const updateImage = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, img',
+    id: 'badRequest',
+  };
+
+  const { id, img } = request.body;
+
+  if (!id || !img) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  data.img = img;
+  pokedexData[id].img = data.img;
+  return respondJSON(request, response, 204, {});
+};
+
+// Adds a specified type to a specified pokemon
+const addType = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, type',
+    id: 'badRequest',
+  };
+
+  const { id, type } = request.body;
+
+  if (!id || !type) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  if (Array.isArray(data.type)) {
+    data.push(type);
+  } else {
+    const currType = data.type;
+    data.type = [];
+    data.push(currType);
+    data.push(type);
+  }
+
+  pokedexData[id].type = data.type;
+  return respondJSON(request, response, 204, {});
+};
+
 // Changes the type(s) of the specified pokemon to the type(s) provided in the request body
-const updateTypes = (request, response) => {
+const updateType = (request, response) => {
   const responseJSON = {
     message: 'Missing one or more required attributes: id, type',
     id: 'badRequest',
@@ -226,17 +294,153 @@ const updateTypes = (request, response) => {
   return respondJSON(request, response, 204, {});
 };
 
+// Updates the height of a specified pokemon to a provided value
+const updateHeight = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, height',
+    id: 'badRequest',
+  };
+
+  const { id, height } = request.body;
+
+  if (!id || !height) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  data.height = height;
+  pokedexData[id].height = data.height;
+  return respondJSON(request, response, 204, {});
+};
+
+// Updates the weight of a specified pokemon to a provided value
+const updateWeight = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, weight',
+    id: 'badRequest',
+  };
+
+  const { id, weight } = request.body;
+
+  if (!id || !weight) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  data.weight = weight;
+  pokedexData[id].weight = data.weight;
+  return respondJSON(request, response, 204, {});
+};
+
+// Adds a weakness to the list of weaknesses
+const addWeakness = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, weakness',
+    id: 'badRequest',
+  };
+
+  const { id, weaknesses } = request.body;
+
+  if (!id || !weaknesses) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  if (Array.isArray(data.weaknesses)) {
+    data.push(weaknesses);
+  } else {
+    const currWeakness = data.weaknesses;
+    data.weaknesses = [];
+    data.push(currWeakness);
+    data.push(weaknesses);
+  }
+
+  pokedexData[id].weaknesses = data.weaknesses;
+  return respondJSON(request, response, 204, {});
+};
+
+// Updates the list of weaknesses to match the list provided in the request
+const updateWeaknesses = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, weaknesses',
+    id: 'badRequest',
+  };
+
+  const { id, weaknesses } = request.body;
+
+  if (!id || !weaknesses) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  data.weaknesses = weaknesses;
+  pokedexData[id].weaknesses = data.weaknesses;
+  return respondJSON(request, response, 204, {});
+};
+
+// Adds an evolution to a specific pokemon
+const addEvolution = (request, response) => {
+  const responseJSON = {
+    message: 'Missing one or more required attributes: id, evoId, evoName',
+    id: 'badRequest',
+  };
+
+  const { id, evoId, evoName } = request.body;
+
+  if (!id || !evoId || !evoName) { return respondJSON(request, response, 400, responseJSON); }
+
+  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
+
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  // Create an object to hold the data about the evolution
+  const evo = {
+    num: `${evoId}`,
+    name: evoName,
+  };
+
+  if (!data.next_evolution) {
+    data.next_evolution = evo;
+    pokedexData[id].next_evolution = data.next_evolution;
+    return respondJSON(request, response, 201, {});
+  }
+
+  // Ensure that evolutions are stored in an array
+  const evoArray = [];
+  data.next_evolution.forEach((element) => {
+    evoArray.push(element);
+  });
+
+  evoArray.push(evo);
+
+  data.next_evolution = evoArray;
+  pokedexData[id].next_evolution = data.next_evolution;
+  return respondJSON(request, response, 204, {});
+};
+
 module.exports = {
   pokedexData,
   getPokemon,
   getAllPokemon,
   getImage,
-  getTypes,
+  getType,
   getWeaknesses,
   getEvolution,
   getHeight,
   getWeight,
   getNotFound,
   addPokemon,
-  updateTypes,
+  updateName,
+  updateImage,
+  addType,
+  updateType,
+  updateHeight,
+  updateWeight,
+  addWeakness,
+  updateWeaknesses,
+  addEvolution,
 };

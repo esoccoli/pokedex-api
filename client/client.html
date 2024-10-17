@@ -1,14 +1,210 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pokedex API</title>
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"> -->
+    <script>
+        let url = '/getPokemon';
+        let method = 'get';
+        const handleResponse = async (response, parseResponse) =>
+        {
+            const content = document.querySelector('#content');
+
+            // Displays the appropriate message based on the status code of the response
+            switch (response.status)
+            {
+                case 200:
+                    content.innerHTML = `<b>Success</b>`;
+                    break;
+                case 201:
+                    content.innerHTML = '<b>Created</b>';
+                    break;
+                case 204:
+                    content.innerHTML = '<b>Updated (No Content)</b>';
+                    return;
+                case 400:
+                    content.innerHTML = `<b>Bad Request</b>`;
+                    break;
+                case 404:
+                    content.innerHTML = `<b>Not Found</b>`;
+                    break;
+                default:
+                    content.innerHTML = `Error code not implemented by client.`;
+                    break;
+            }
+
+            if (parseResponse)
+            {
+                let obj = await response.json();
+
+                let jsonString = JSON.stringify(obj);
+                content.innerHTML += `<p>${jsonString}</p>`;
+            }
+            else
+            {
+                content.innerHTML += '<p>Metadata Received</p>';
+            }
+
+        };
+
+        const sendRequest = async (form) =>
+        {
+            url = form.querySelector('#urlField').value;
+            method = form.querySelector('#methodSelect').value;
+
+            let response;
+
+            let formData = `?id=${idField.value}`;
+            if (url === '/updateName')
+            {
+                formData += `&name=${nameField.value}`;
+            }
+            else if (url === '/updateImage')
+            {
+                formData += `&img=${imgField.value}`;
+            }
+            else if (url === '/addType' || url === '/updateType')
+            {
+                formData += `&type=${typeField.value}`;
+            }
+            else if (url === '/updateHeight')
+            {
+                formData += `&height=${heightField.value}`;
+            }
+            else if (url === '/updateWeight')
+            {
+                formData += `&weight=${weightField.value}`;
+            }
+            else if (url === '/addWeakness' || url === '/updateWeaknesses')
+            {
+                formData += `&weakness=${weaknessField.value}`;
+            }
+            else if (url === 'addPokemon')
+            {
+                formData += `&num=${numField.value}&name=${nameField.value}&img=${imgField.value}&type=${typeField.value}`;
+                formData += `&height=${heightField.value}&weight=${weightField.value}&weakness=${weaknessField.value}`;
+            }
+
+            if (method !== 'post')
+            {
+                response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                handleResponse(response, method === 'get');
+            }
+            else
+            {
+                response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                });
+
+                handleResponse(response, response.status !== 204);
+            }
+
+        }
+
+        const updateMethod = (e) =>
+        {
+            method = e.target.method;
+        }
+
+        const updateUrl = (e) =>
+        {
+            url = e.target.url
+        }
+
+        const init = () =>
+        {
+            const form = document.querySelector('#reqForm');
+
+            const addData = (e) =>
+            {
+                e.preventDefault();
+                sendRequest(form);
+                return false;
+            }
+
+            const getData = (e) =>
+            {
+                e.preventDefault();
+                sendRequest(form);
+                return false;
+            }
+
+            form.addEventListener('submit', sendRequest);
+            document.querySelector("#methodSelect").addEventListener('change', updateMethod);
+            document.querySelector("#urlField").addEventListener('change', updateUrl);
+            // postReqForm.addEventListener('submit', addData);
+        };
+
+        window.onload = init;
+    </script>
 </head>
 
 <body>
+    <section id="top">
+        <h1 id="pageHeader">API Endpoint Test</h1>
+        <form id="reqForm" action="/getPokemon">
+            <label for="id">Id: </label>
+            <input id="idField" type="number" name="id" /><br><br>
+            <label for="num">Num: </label>
+            <input id="numField" type="text" name="num" /><br><br>
+            <label for="name">Name: </label>
+            <input id="nameField" type="text" name="name" /><br><br>
+            <label for="img">Image: </label>
+            <input id="imgField" type="text" name="img" /><br><br>
+            <label for="type">Type: </label>
+            <input id="typeField" type="text" name="type" /><br><br>
+            <label for="height">Height: </label>
+            <input id="heightField" type="text" name="height" /><br><br>
+            <label for="weight">Weight: </label>
+            <input id="weightField" type="text" name="weight" /><br><br>
+            <label for="weakness">Weakness: </label>
+            <input id="weaknessField" type="text" name="weakness" /><br><br>
 
+            <select id="urlField">
+                <option value="/getPokemon">/getPokemon</option>
+                <option value="/getAllPokemon">/getAllPokemon</option>
+                <option value="/getName">/getName</option>
+                <option value="/getImage">/getImage</option>
+                <option value="/getType">/getType</option>
+                <option value="/getWeaknesses">/getWeaknesses</option>
+                <option value="/getEvolution">/getEvolution</option>
+                <option value="/getHeight">/getHeight</option>
+                <option value="/getWeight">/getWeight</option>
+                <option value="/addPokemon">/addPokemon</option>
+                <option value="/updateName">/updateName</option>
+                <option value="/updateImage">/updateImage</option>
+                <option value="/addType">/addType</option>
+                <option value="/updateType">/updateType</option>
+                <option value="/updateHeight">/updateHeight</option>
+                <option value="/updateWeight">/updateWeight</option>
+                <option value="/addWeakness">/addWeakness</option>
+                <option value="/updateWeaknesses">/updateWeaknesses</option>
+            </select>
+
+            <select id="methodSelect">
+                <option value="get">GET</option>
+                <option value="head">HEAD</option>
+                <option value="post">POST</option>
+            </select>
+            <input type="submit" value="Send Request" />
+        </form>
+    </section>
+    <section id="content">
+    </section>
 </body>
 
 </html>

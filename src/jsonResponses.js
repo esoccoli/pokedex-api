@@ -12,7 +12,7 @@ const respondJSON = (request, response, status, object) => {
   });
 
   // Don't send a response body if the request method was HEAD or if the status code is 204
-  if (request.method !== 'HEAD' && status !== 204) {
+  if (request.method !== 'head' && status !== 204) {
     response.write(content);
   }
 
@@ -69,6 +69,16 @@ const getImage = (request, response) => {
   if (!data) { return invalidIdQueryParam(request, response); }
 
   return respondJSON(request, response, 200, data.img);
+};
+
+// Retreives the name of the specified pokemon
+const getName = (request, response) => {
+  if (!request.query.id) { return missingIdQueryParam(request, response); }
+
+  const data = getPokemonById(request);
+  if (!data) { return invalidIdQueryParam(request, response); }
+
+  return respondJSON(request, response, 200, data.name);
 };
 
 // Retreives the type(s) of the pokemon with the specified index
@@ -334,98 +344,11 @@ const updateWeight = (request, response) => {
   return respondJSON(request, response, 204, {});
 };
 
-// Adds a weakness to the list of weaknesses
-const addWeakness = (request, response) => {
-  const responseJSON = {
-    message: 'Missing one or more required attributes: id, weakness',
-    id: 'badRequest',
-  };
-
-  const { id, weaknesses } = request.body;
-
-  if (!id || !weaknesses) { return respondJSON(request, response, 400, responseJSON); }
-
-  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
-
-  if (!data) { return invalidIdQueryParam(request, response); }
-
-  if (Array.isArray(data.weaknesses)) {
-    data.push(weaknesses);
-  } else {
-    const currWeakness = data.weaknesses;
-    data.weaknesses = [];
-    data.push(currWeakness);
-    data.push(weaknesses);
-  }
-
-  pokedexData[id].weaknesses = data.weaknesses;
-  return respondJSON(request, response, 204, {});
-};
-
-// Updates the list of weaknesses to match the list provided in the request
-const updateWeaknesses = (request, response) => {
-  const responseJSON = {
-    message: 'Missing one or more required attributes: id, weaknesses',
-    id: 'badRequest',
-  };
-
-  const { id, weaknesses } = request.body;
-
-  if (!id || !weaknesses) { return respondJSON(request, response, 400, responseJSON); }
-
-  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
-
-  if (!data) { return invalidIdQueryParam(request, response); }
-
-  data.weaknesses = weaknesses;
-  pokedexData[id].weaknesses = data.weaknesses;
-  return respondJSON(request, response, 204, {});
-};
-
-// Adds an evolution to a specific pokemon
-const addEvolution = (request, response) => {
-  const responseJSON = {
-    message: 'Missing one or more required attributes: id, evoId, evoName',
-    id: 'badRequest',
-  };
-
-  const { id, evoId, evoName } = request.body;
-
-  if (!id || !evoId || !evoName) { return respondJSON(request, response, 400, responseJSON); }
-
-  const data = pokedexData.find((p) => p.id === parseInt(request.body.id, 10));
-
-  if (!data) { return invalidIdQueryParam(request, response); }
-
-  // Create an object to hold the data about the evolution
-  const evo = {
-    num: `${evoId}`,
-    name: evoName,
-  };
-
-  if (!data.next_evolution) {
-    data.next_evolution = evo;
-    pokedexData[id].next_evolution = data.next_evolution;
-    return respondJSON(request, response, 201, {});
-  }
-
-  // Ensure that evolutions are stored in an array
-  const evoArray = [];
-  data.next_evolution.forEach((element) => {
-    evoArray.push(element);
-  });
-
-  evoArray.push(evo);
-
-  data.next_evolution = evoArray;
-  pokedexData[id].next_evolution = data.next_evolution;
-  return respondJSON(request, response, 204, {});
-};
-
 module.exports = {
   pokedexData,
   getPokemon,
   getAllPokemon,
+  getName,
   getImage,
   getType,
   getWeaknesses,
@@ -440,7 +363,4 @@ module.exports = {
   updateType,
   updateHeight,
   updateWeight,
-  addWeakness,
-  updateWeaknesses,
-  addEvolution,
 };

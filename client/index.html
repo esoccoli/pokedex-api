@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        let method = 'get';
+        const handleResponse = async (response, parseResponse) =>
+        {
+            const content = document.querySelector('#content');
+
+            // Displays the appropriate message based on the status code of the response
+            switch (response.status)
+            {
+                case 200:
+                    content.innerHTML = `<b>Success</b>`;
+                    break;
+                case 201:
+                    content.innerHTML = `<b>Created</b>`;
+                    break;
+                case 204:
+                    content.innerHTML = `<b>Updated (No Content)</b>`;
+                    return;
+                case 400:
+                    content.innerHTML = `<b>Bad Request</b>`;
+                    break;
+                case 404:
+                    content.innerHTML = `<b>Not Found</b>`;
+                    break;
+                default:
+                    content.innerHTML = `Error code not implemented by client.`;
+                    break;
+            }
+
+            if (parseResponse)
+            {
+                let obj = await response.json();
+
+                let jsonString = JSON.stringify(obj);
+                content.innerHTML += `<p>${jsonString}</p>`;
+            }
+            else
+            {
+                content.innerHTML += '<p>Metadata Received</p>';
+            }
+
+        };
+
+        const getPkmn = async (getPkmnForm) =>
+        {
+            const url = '/getPokemon';
+            const method = document.querySelector('#getPkmnMethodSelect').value;
+
+            let response = await fetch(url, {
+                method,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            handleResponse(response, method === 'get');
+        }
+
+        const updateMethod = (e) =>
+        {
+            document.querySelector()
+        }
+
+        const init = () =>
+        {
+            const getPkmnForm = document.querySelector('#getPkmnForm');
+
+            document.querySelector("#getPkmnSubmit").addEventListener('submit', getPkmn);
+            document.querySelector("#getPkmnMethodSelect").addEventListener('change', updateMethod);
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Pokemon API</h1>
+    <section class="endpoint">
+        <h2>/getPokemon</h2>
+        <form id="getPkmnForm" action="/getPokemon">
+            <label for="id">Pokemon Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submit" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getAllPokemon</h2>
+        <form id="getAllPkmnForm" action="/getAllPokemon">
+            <input type="submit" class="submit" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getName</h2>
+        <form id="getNameForm" action="/getName">
+            <label for="id">Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getImage</h2>
+        <form id="getImageForm" action="/getImage">
+            <label for="id">Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getType</h2>
+        <form id="getTypeForm" action="/getType">
+            <label for="id"> Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getWeaknesses</h2>
+        <form id="getWeaknessesForm" action="/getWeaknesses">
+            <label for="id">Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getEvolution</h2>
+        <form id="getEvolutionForm" action="/getEvolution">
+            <label for="id">Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getHeight</h2>
+        <form id="getHeightForm" action="/getHeight">
+            <label for="id">Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/getWeight</h2>
+        <form id="getWeightForm" action="/getWeight">
+            <label for="id">Id: </label>
+            <input class="idField" type="number" name="id" />
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/addPokemon</h2>
+        <form id="addPokemonForm" action="/addPokemon">
+            <label for="id">Id: </label>
+            <input class="idField" type="number" name="id">
+            <label for="num">Num: </label>
+            <input class="numField" type="text" name="num">
+            <label for="name">Name: </label>
+            <input class="nameField" type="text" name="name"><br /><br />
+            <label for="img">Image: </label>
+            <input class="imgField" type="text" name="imgField">
+            <label for="type ">Type: </label>
+            <input class="typeField" type="text" name="type">
+            <label for="height">Height: </label>
+            <input class="heightField" type="text" name="height"><br /><br />
+            <label for="weight">Weight: </label>
+            <input class="weightField" type="text" name="weight">
+            <label for="weakness">Weakness: </label>
+            <input class="weaknessField" type="text" name="weakness">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/updateName</h2>
+        <form id="updateNameForm" action="/updateName">
+            <label for="id">Pokemon Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/addType</h2>
+        <form id="addTypeForm" action="/addType">
+            <label for="id">Pokemon Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/updateType</h2>
+        <form id="updateTypeForm" action="/updateType">
+            <label for="id">Pokemon Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/updateHeight</h2>
+        <form id="updateHeightForm" action="/updateHeight">
+            <label for="id">Pokemon Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <section class="endpoint">
+        <h2>/updateWeight</h2>
+        <form id="updateWeightForm" action="/updateWeight">
+            <label for="id">Pokemon Id: </label>
+            <input class="idField" type="number" name="id">
+            <input type="submit" class="submitBtn" value="Submit" />
+        </form>
+    </section>
+
+    <hr />
+
+    <div id="content"></div>
+</body>
+
+</html>

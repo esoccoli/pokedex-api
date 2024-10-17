@@ -48,6 +48,71 @@
 
         };
 
+        const sendRequest = async (form) =>
+        {
+            url = form.querySelector('#urlField').value;
+            method = form.querySelector('#methodSelect').value;
+
+            let response;
+
+            let formData = `?id=${idField.value}`;
+            if (url === '/updateName')
+            {
+                formData += `&name=${nameField.value}`;
+            }
+            else if (url === '/updateImage')
+            {
+                formData += `&img=${imgField.value}`;
+            }
+            else if (url === '/addType' || url === '/updateType')
+            {
+                formData += `&type=${typeField.value}`;
+            }
+            else if (url === '/updateHeight')
+            {
+                formData += `&height=${heightField.value}`;
+            }
+            else if (url === '/updateWeight')
+            {
+                formData += `&weight=${weightField.value}`;
+            }
+            else if (url === '/addWeakness' || url === '/updateWeaknesses')
+            {
+                formData += `&weakness=${weaknessField.value}`;
+            }
+            else if (url === 'addPokemon')
+            {
+                formData += `&num=${numField.value}&name=${nameField.value}&img=${imgField.value}&type=${typeField.value}`;
+                formData += `&height=${heightField.value}&weight=${weightField.value}&weakness=${weaknessField.value}`;
+            }
+
+            if (method !== 'post')
+            {
+                response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                handleResponse(response, method === 'get');
+            }
+            else
+            {
+                response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                });
+
+                handleResponse(response, response.status !== 204);
+            }
+
+        }
+
         const getPkmn = async (getPkmnForm) =>
         {
             const url = '/getPokemon';
@@ -58,23 +123,19 @@
                 headers: {
                     'Accept': 'application/json'
                 }
-            });
-
-            handleResponse(response, method === 'get');
-        }
-
-        const updateMethod = (e) =>
-        {
-            document.querySelector()
+            }).then(handleResponse(response, method === 'get'));
         }
 
         const init = () =>
         {
             const getPkmnForm = document.querySelector('#getPkmnForm');
+            const getAllPkmnForm = document.querySelector('#getAllPkmnForm');
 
             document.querySelector("#getPkmnSubmit").addEventListener('submit', getPkmn);
             document.querySelector("#getPkmnMethodSelect").addEventListener('change', updateMethod);
         }
+
+        window.onload = init;
     </script>
 </head>
 
@@ -161,7 +222,7 @@
 
     <section class="endpoint">
         <h2>/addPokemon</h2>
-        <form id="addPokemonForm" action="/addPokemon">
+        <form id="addPokemonForm" action="/addPokemon" method="post">
             <label for="id">Id: </label>
             <input class="idField" type="number" name="id">
             <label for="num">Num: </label>
@@ -169,7 +230,7 @@
             <label for="name">Name: </label>
             <input class="nameField" type="text" name="name"><br /><br />
             <label for="img">Image: </label>
-            <input class="imgField" type="text" name="imgField">
+            <input class="imgField" type="text" name="img">
             <label for="type ">Type: </label>
             <input class="typeField" type="text" name="type">
             <label for="height">Height: </label>
@@ -177,59 +238,59 @@
             <label for="weight">Weight: </label>
             <input class="weightField" type="text" name="weight">
             <label for="weakness">Weakness: </label>
-            <input class="weaknessField" type="text" name="weakness">
+            <input class="weaknessField" type="text" name="weaknesses">
             <input type="submit" class="submitBtn" value="Submit" />
         </form>
     </section>
 
     <section class="endpoint">
         <h2>/updateName</h2>
-        <form id="updateNameForm" action="/updateName">
-            <label for="id">Pokemon Id: </label>
+        <form id="updateNameForm" action="/updateName" method="post">
+            <label for="id">Id: </label>
             <input class="idField" type="number" name="id">
-            <input type="submit" class="submitBtn" value="Submit" />
-        </form>
-    </section>
-
-    <section class="endpoint">
-        <h2>/addType</h2>
-        <form id="addTypeForm" action="/addType">
-            <label for="id">Pokemon Id: </label>
-            <input class="idField" type="number" name="id">
+            <label for="name">Name: </label>
+            <input class="nameField" type="text" name="name">
             <input type="submit" class="submitBtn" value="Submit" />
         </form>
     </section>
 
     <section class="endpoint">
         <h2>/updateType</h2>
-        <form id="updateTypeForm" action="/updateType">
+        <form id="updateTypeForm" action="/updateType" method="post">
             <label for="id">Pokemon Id: </label>
             <input class="idField" type="number" name="id">
+            <label for="type">Type: </label>
+            <input class="typeField" type="text" name="type">
             <input type="submit" class="submitBtn" value="Submit" />
         </form>
     </section>
 
     <section class="endpoint">
         <h2>/updateHeight</h2>
-        <form id="updateHeightForm" action="/updateHeight">
+        <form id="updateHeightForm" action="/updateHeight" method="post">
             <label for="id">Pokemon Id: </label>
             <input class="idField" type="number" name="id">
+            <label for="height">Height: </label>
+            <input class="heightField" type="text" name="height">
             <input type="submit" class="submitBtn" value="Submit" />
         </form>
     </section>
 
     <section class="endpoint">
         <h2>/updateWeight</h2>
-        <form id="updateWeightForm" action="/updateWeight">
+        <form id="updateWeightForm" action="/updateWeight" method="post">
             <label for="id">Pokemon Id: </label>
             <input class="idField" type="number" name="id">
+            <label for="weight">Weight: </label>
+            <input class="weightField" type="text" name="weight">
             <input type="submit" class="submitBtn" value="Submit" />
         </form>
     </section>
 
     <hr />
 
-    <div id="content"></div>
+    <div id="content">
+    </div>
 </body>
 
 </html>
